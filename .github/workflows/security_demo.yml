@@ -1,0 +1,34 @@
+name: Bonus - Security Demo
+
+on:
+  workflow_dispatch: # On le lance manuellement pour tester
+
+jobs:
+  security-test:
+    runs-on: self-hosted
+
+    steps:
+      # Tâche 3.1 : Utilisation normale
+      - name: 1. Affichage standard (Sécurisé)
+        run: |
+          echo "La variable publique est : ${{ vars.MY_PUBLIC_VAR }}"
+          echo "Le secret est : ${{ secrets.MY_SECRET_KEY }}"
+          echo "GitHub masque automatiquement les secrets dans les logs."
+
+      # Tâche 3.2 : Le Hack (Comment extraire un secret)
+      # Technique : On découpe la chaine de caractères pour que GitHub
+      # ne reconnaisse pas le pattern exact du secret et oublie de le masquer.
+      - name: 2. Hacking du secret (DANGER)
+        shell: python
+        env:
+          THE_SECRET: ${{ secrets.MY_SECRET_KEY }}
+        run: |
+          import os
+          secret = os.getenv("THE_SECRET")
+          
+          print("--- DÉBUT DU HACK ---")
+          # On imprime caractère par caractère avec un espace
+          # GitHub ne voit pas "12345...", il voit "1", "2", "3"... donc il ne masque pas.
+          hacked = " ".join(list(secret))
+          print(f"Secret volé : {hacked}")
+          print("--- FIN DU HACK ---")
