@@ -1,0 +1,41 @@
+name: CI/CD Test Pipeline
+
+# Quand déclencher le pipeline ?
+on:
+  push:
+    branches:
+      - main  # Sur chaque push vers la branche main
+    paths:
+      - '**/*.py'           # Uniquement si des fichiers Python changent
+      - 'requirements.txt'  # Ou si les dépendances changent
+      - '.github/workflows/**' # Ou si le workflow change
+  pull_request:
+    branches:
+      - main  # Idem pour les Pull Requests vers main
+
+# Quoi faire ?
+jobs:
+  test:
+    runs-on: ubuntu-latest  # Utilise une machine virtuelle Linux fournie par GitHub
+
+    steps:
+      # 1. Récupérer le code du repo
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 2. Installer Python
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"  # On s'aligne sur ta version locale
+
+      # 3. Installer les dépendances
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      # 4. Lancer les tests
+      - name: Run tests
+        run: |
+          pytest
