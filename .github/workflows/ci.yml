@@ -1,41 +1,64 @@
 name: CI/CD Test Pipeline
 
-# Quand déclencher le pipeline ?
 on:
+  # 1. Déclenchement automatique sur changement de code (Tâche 2.3)
   push:
     branches:
-      - main  # Sur chaque push vers la branche main
+      - main
     paths:
-      - '**/*.py'           # Uniquement si des fichiers Python changent
-      - 'requirements.txt'  # Ou si les dépendances changent
-      - '.github/workflows/**' # Ou si le workflow change
+      - '**/*.py'
+      - 'requirements.txt'
+      - '.github/workflows/**'
   pull_request:
     branches:
-      - main  # Idem pour les Pull Requests vers main
+      - main
+    paths:
+      - '**/*.py'
+      - 'requirements.txt'
+      - '.github/workflows/**'
 
-# Quoi faire ?
+  # 2. Déclenchement manuel avec paramètres (Tâche 2.4)
+  workflow_dispatch:
+    inputs:
+      name:
+        description: "Your name"
+        required: true
+        default: "Student"
+      run_extra_step:
+        description: "Run the extra step? (true|false)"
+        required: false
+        default: "false"
+
 jobs:
   test:
-    runs-on: self-hosted  #Utilise la machine que vous avez configurée
+    runs-on: self-hosted
 
     steps:
-      # 1. Récupérer le code du repo
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # 2. Installer Python
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.11"  # On s'aligne sur ta version locale
+          python-version: "3.11"
 
-      # 3. Installer les dépendances
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      # 4. Lancer les tests
+      # Étape spécifique pour le Lab (Tâche 2.4)
+      - name: Print inputs (Manual Dispatch only)
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          echo "Hello, ${{ inputs.name }}!"
+          echo "Extra step requested: ${{ inputs.run_extra_step }}"
+
+      - name: Optional extra step
+        if: ${{ inputs.run_extra_step == 'true' }}
+        run: |
+          echo "Running the extra step because you asked for it."
+
       - name: Run tests
         run: |
           pytest
