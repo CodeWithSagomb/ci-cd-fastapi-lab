@@ -16,7 +16,7 @@ on:
 # Quoi faire ?
 jobs:
   test:
-    runs-on: ubuntu-latest  # Utilise une machine virtuelle Linux fournie par GitHub
+    runs-on: self-hosted  # Utilise une machine virtuelle Linux fournie par GitHub
 
     steps:
       # 1. Récupérer le code du repo
