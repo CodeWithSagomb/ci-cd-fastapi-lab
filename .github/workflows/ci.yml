@@ -16,7 +16,7 @@ on:
 # Quoi faire ?
 jobs:
   test:
-    runs-on: self-hosted  # Utilise une machine virtuelle Linux fournie par GitHub
+    runs-on: self-hosted  #Utilise la machine que vous avez configurée
 
     steps:
       # 1. Récupérer le code du repo
